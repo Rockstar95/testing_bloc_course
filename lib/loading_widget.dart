@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+//https://www.youtube.com/watch?v=Mn254cnduOY&list=PL6yRaaP0WPkUf-ff1OX99DVSL1cynLHxO&index=9
+//Start From 3:39:37
+
 class LoadingScreen {
   LoadingScreen._sharedInstance();
   static LoadingScreen sharedInstance = LoadingScreen._sharedInstance();
@@ -104,4 +107,19 @@ class LoadingScrollController {
     required this.close,
     required this.update,
   });
+}
+
+Widget getShowLoadingButton(BuildContext context) {
+  return TextButton(
+    onPressed: () async {
+      LoadingScreen().showLoading(context: context, text: "Verification In Progress");
+      await Future.delayed(const Duration(seconds: 2));
+      LoadingScreen().showLoading(context: context, text: "Verification Done");
+      await Future.delayed(const Duration(seconds: 2));
+      LoadingScreen().showLoading(context: context, text: "Logging You In");
+      await Future.delayed(const Duration(seconds: 2));
+      LoadingScreen().hideLoading();
+    },
+    child: const Text("Show loading"),
+  );
 }

@@ -1,25 +1,17 @@
-import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'dart:math' as math show Random;
-
-import 'package:testing_bloc_course/loading_widget.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:testing_bloc_course/app_bloc_observer.dart';
+import 'package:testing_bloc_course/names_cubit_example/ui/names_cubit_home_screen.dart';
+import 'package:testing_bloc_course/random_image_loader_example/ui/random_image_loader_home_screen.dart';
 
 void main() {
-  runApp(const MyApp());
-}
+  WidgetsFlutterBinding.ensureInitialized();
 
-const List<String> names = ["Foo", "Bar", "Boy"];
-
-extension RandomElement<T> on Iterable<T> {
-  T getRandomElement() => elementAt(math.Random().nextInt(length));
-}
-
-class NamesCubit extends Cubit<String?> {
-  NamesCubit() : super(null);
-
-  void pickRandomName() {
-    emit(names.getRandomElement());
-  }
+  BlocOverrides.runZoned(() {
+    runApp(const MyApp());
+  },
+    blocObserver: AppBlocObserver(),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -27,10 +19,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: const MaterialApp(
-        home: HomeScreen(),
-      ),
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: HomeScreen(),
     );
   }
 }
@@ -43,89 +34,43 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late final NamesCubit namesCubit;
-
-  @override
-  void initState() {
-    namesCubit = NamesCubit();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    namesCubit.close();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Home Screen"),
         ),
-        body: StreamBuilder<String?>(
-          stream: namesCubit.stream,
-          builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-            print("Connection State:${snapshot.connectionState}");
-
-            if(snapshot.connectionState == ConnectionState.done) {
-              return const SizedBox();
-            }
-            else if(snapshot.connectionState == ConnectionState.none) {
-              return getButton();
-            }
-            else if(snapshot.connectionState == ConnectionState.active) {
-              return Column(
-                children: [
-                  Text(snapshot.data ?? ""),
-                  getButton(),
-                  SizedBox(height: 10,),
-                  getShowLoadingButton(),
-                ],
-              );
-            }
-            else if(snapshot.connectionState == ConnectionState.waiting) {
-              return Column(
-                children: [
-                  Text(snapshot.data ?? ""),
-                  getButton(),
-                  SizedBox(height: 10,),
-                  getShowLoadingButton(),
-                ],
-              );
-            }
-            else {
-              return getButton();
-            }
-          },
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Column(
+              children: [
+                getButton("Names Cubit Screen", () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const NameCubitHomeScreen()));
+                }),
+                getButton("Random Image Loader Screen", () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const RandomImageLoaderHomeScreen()));
+                }),
+              ],
+            )
+          ],
         ),
       ),
     );
   }
 
-  Widget getButton() {
-    return TextButton(
+  Widget getButton(String text, void Function() onTap) {
+    return FlatButton(
       onPressed: () {
-        namesCubit.pickRandomName();
+        onTap();
       },
-      child: const Text("Pick Random Value"),
-    );
-  }
-
-  Widget getShowLoadingButton() {
-    return TextButton(
-      onPressed: () async {
-        LoadingScreen().showLoading(context: context, text: "Verification In Progress");
-        await Future.delayed(const Duration(seconds: 2));
-        LoadingScreen().showLoading(context: context, text: "Verification Done");
-        await Future.delayed(const Duration(seconds: 2));
-        LoadingScreen().showLoading(context: context, text: "Logging You In");
-        await Future.delayed(const Duration(seconds: 2));
-        LoadingScreen().hideLoading();
-      },
-      child: const Text("Show loading"),
+      color: Colors.blue,
+      child: Text(text, style: const TextStyle(color: Colors.white),),
     );
   }
 }
+
+
 
