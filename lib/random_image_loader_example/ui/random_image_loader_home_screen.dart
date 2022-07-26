@@ -16,22 +16,25 @@ class RandomImageLoaderHomeScreen extends StatefulWidget {
 class _RandomImageLoaderHomeScreenState extends State<RandomImageLoaderHomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Scaffold(
-        body: AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle.dark,
-          child: MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (_) => TopBloc(urls: random_image_urls, waitBeforeLoadUrl: const Duration(seconds: 10))),
-              BlocProvider(create: (_) => BottomBloc(urls: random_image_urls, waitBeforeLoadUrl: const Duration(seconds: 10))),
-            ],
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.max,
-              children: const [
-                RandomImageloaderBlocView<TopBloc>(),
-                RandomImageloaderBlocView<BottomBloc>(),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Container(
+        child: Scaffold(
+          body: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle.dark,
+            child: MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => TopBloc(urls: random_image_urls, waitBeforeLoadUrl: const Duration(seconds: 10))),
+                BlocProvider(create: (_) => BottomBloc(urls: random_image_urls, waitBeforeLoadUrl: const Duration(seconds: 10))),
               ],
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.max,
+                children: const [
+                  RandomImageloaderBlocView<TopBloc>(),
+                  RandomImageloaderBlocView<BottomBloc>(),
+                ],
+              ),
             ),
           ),
         ),

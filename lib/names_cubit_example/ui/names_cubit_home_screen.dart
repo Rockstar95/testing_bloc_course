@@ -28,7 +28,9 @@ class _NameCubitHomeScreenState extends State<NameCubitHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Container(
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Home Screen"),
@@ -70,6 +72,7 @@ class _NameCubitHomeScreenState extends State<NameCubitHomeScreen> {
           },
         ),
       ),
+    ),
     );
   }
 
